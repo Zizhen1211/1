@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>给KK的一封信</title>
+  <style>
+    :root {
+      --cream: #fff2be;
+      --paper: #fffdf4;
+      --ink: #5d5049;
+      --line: #806f64;
+      --blue: #cfeef7;
+      --yellow: #fff0a8;
+      --pink: #f5a7af;
+      --mint: #dff3df;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: "Kaiti SC", "STKaiti", "KaiTi", "Comic Sans MS", cursive;
+    }
+
+    button,
+    iframe {
+      font: inherit;
+    }
+
+    /* ---------- 第一幕：信封 ---------- */
+    .intro-scene {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 14% 18%, rgba(255,255,255,.55) 0 7%, transparent 7.5%),
+        radial-gradient(circle at 88% 82%, rgba(255,255,255,.38) 0 9%, transparent 9.5%),
+        #fff2be;
+      transition: opacity .7s ease, visibility .7s ease;
+    }
+
+    .intro-scene::before,
+    .intro-scene::after {
+      position: absolute;
+      color: rgba(171, 132, 73, .35);
+      font-size: clamp(3rem, 8vw, 7rem);
+      content: "✦";
+      transform: rotate(-10deg);
+    }
+
+    .intro-scene::before {
+      top: 8%;
+      left: 8%;
+    }
+
+    .intro-scene::after {
+      right: 8%;
+      bottom: 8%;
+      content: "♡";
+      transform: rotate(10deg);
+    }
+
+    .intro-scene.is-gone {
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .intro-wrap {
+      position: relative;
+      width: min(92vw, 650px);
+      text-align: center;
+    }
+
+    .tiny-title {
+      margin: 0 0 1rem;
+      color: #8a735f;
+      font-size: clamp(1rem, 2.8vw, 1.35rem);
+      letter-spacing: .12em;
+      opacity: .78;
+    }
+
+    .envelope {
+      position: relative;
+      width: min(84vw, 540px);
+      height: min(58vw, 350px);
+      min-height: 230px;
+      margin: 0 auto;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      perspective: 1000px;
+      filter: drop-shadow(9px 13px 0 rgba(116, 89, 57, .10));
+      transition: transform .8s ease, opacity .6s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .envelope:hover {
+      transform: translateY(-5px) rotate(-.5deg);
+    }
+
+    .envelope:focus-visible {
+      outline: 4px dashed #8b7967;
+      outline-offset: 10px;
+      border-radius: 18px;
+    }
+
+    .envelope-back {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 1;
+      height: 69%;
+      border: 4px solid var(--line);
+      border-radius: 12px 15px 17px 10px;
+      background: #f9f0dc;
+      transform: rotate(.25deg);
+    }
+
+    .paper-preview {
+      position: absolute;
+      bottom: 5%;
+      left: 50%;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      width: 84%;
+      height: 62%;
+      border: 3px solid #8b7e73;
+      border-radius: 8px 5px 10px 6px;
+      background:
+        repeating-linear-gradient(to bottom, transparent 0 29px, rgba(122,172,184,.16) 30px 31px),
+        #fffdf5;
+      box-shadow: 0 3px 0 rgba(68, 55, 45, .08);
+      color: #8a6e66;
+      transform: translateX(-50%) rotate(-.7deg);
+      transition: transform 1.05s cubic-bezier(.22,.8,.25,1), width .9s ease, height .9s ease;
+    }
+
+    .preview-message {
+      padding: 1rem;
+      font-size: clamp(1.05rem, 3vw, 1.55rem);
+      letter-spacing: .08em;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .45s .55s ease, transform .45s .55s ease;
+    }
+
+    .doodle-heart {
+      display: inline-block;
+      margin-left: .4rem;
+      color: #e89098;
+      transform: rotate(8deg);
+    }
+
+    .fold,
+    .flap {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      pointer-events: none;
+    }
+
+    .fold-left,
+    .fold-right {
+      z-index: 3;
+      height: 68%;
+      background: #f4ead5;
+      filter: drop-shadow(0 0 1px var(--line));
+    }
+
+    .fold-left {
+      clip-path: polygon(0 0, 58% 52%, 0 100%);
+    }
+
+    .fold-right {
+      clip-path: polygon(100% 0, 42% 52%, 100% 100%);
+    }
+
+    .fold-bottom {
+      z-index: 4;
+      height: 57%;
+      border-bottom: 4px solid var(--line);
+      border-radius: 0 0 12px 12px;
+      background: #fff5e3;
+      clip-path: polygon(0 100%, 0 88%, 50% 18%, 100% 88%, 100% 100%);
+      filter: drop-shadow(0 -1px 0 var(--line));
+    }
+
+    .flap {
+      top: 31%;
+      bottom: auto;
+      z-index: 5;
+      height: 48%;
+      border-radius: 10px;
+      background: #fbf1df;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      filter: drop-shadow(0 3px 0 var(--line));
+      transform: rotateX(0deg) rotate(.2deg);
+      transform-origin: top center;
+      transition: transform .95s cubic-bezier(.2,.8,.2,1), z-index 0s .45s;
+    }
+
+    .envelope.is-open .flap {
+      z-index: 0;
+      transform: rotateX(180deg);
+    }
+
+    .envelope.is-open .paper-preview {
+      transform: translate(-50%, -58%) rotate(.5deg);
+    }
+
+    .envelope.is-open .preview-message {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .envelope.is-unfolding {
+      transform: scale(1.08);
+    }
+
+    .envelope.is-unfolding .paper-preview {
+      z-index: 9;
+      width: 96%;
+      height: 124%;
+      transform: translate(-50%, -30%) rotate(0deg);
+    }
+
+    .click-tip {
+      margin: 1.6rem 0 0;
+      color: #7d6b5c;
+      font-size: clamp(1rem, 2.8vw, 1.25rem);
+      animation: breathe 2s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      50% { opacity: .5; transform: translateY(3px); }
+    }
+
+    /* ---------- 过场闪白 ---------- */
+    .white-flash {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: white;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 1.35s ease, visibility 0s 1.35s;
+    }
+
+    .white-flash.is-on {
+      visibility: visible;
+      opacity: 1;
+      transition: opacity 1.35s ease;
+    }
+
+    /* ---------- 第二幕：展开的信 ---------- */
+    .letter-scene {
+      position: relative;
+      display: none;
+      min-height: 100vh;
+      padding: clamp(20px, 4vw, 54px) 18px 210px;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 12% 10%, rgba(255,255,255,.92) 0 5%, transparent 5.5%),
+        radial-gradient(ellipse at 75% 13%, rgba(255,255,255,.78) 0 7%, transparent 7.5%),
+        radial-gradient(ellipse at 90% 52%, rgba(255,241,158,.72) 0 13%, transparent 13.5%),
+        radial-gradient(ellipse at 13% 76%, rgba(203,238,248,.85) 0 17%, transparent 17.5%),
+        linear-gradient(135deg, #d8f1f8 0%, #fffdf3 43%, #fff0a9 100%);
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    .letter-scene.is-visible {
+      display: block;
+      opacity: 1;
+    }
+
+    .letter-scene::before {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        radial-gradient(circle, rgba(241,166,174,.38) 0 3px, transparent 4px),
+        radial-gradient(circle, rgba(121,196,215,.28) 0 4px, transparent 5px);
+      background-position: 20px 30px, 72px 86px;
+      background-size: 115px 115px, 150px 150px;
+      content: "";
+      pointer-events: none;
+    }
+
+    .letter-paper {
+      position: relative;
+      z-index: 2;
+      width: min(100%, 820px);
+      margin: 0 auto;
+      padding: clamp(30px, 6vw, 72px) clamp(24px, 7vw, 74px) 150px;
+      border: 3px solid rgba(126, 112, 100, .52);
+      border-radius: 14px 9px 18px 11px;
+      background:
+        repeating-linear-gradient(to bottom, transparent 0 43px, rgba(116,178,193,.17) 44px 45px),
+        rgba(255, 253, 245, .94);
+      box-shadow: 10px 13px 0 rgba(92, 121, 132, .10);
+      transform: rotate(-.15deg);
+    }
+
+    .letter-paper::before,
+    .letter-paper::after {
+      position: absolute;
+      color: #efb0b6;
+      content: "✦";
+      font-size: 2.1rem;
+    }
+
+    .letter-paper::before {
+      top: 20px;
+      right: 34px;
+      color: #efc85c;
+      transform: rotate(12deg);
+    }
+
+    .letter-paper::after {
+      bottom: 35px;
+      left: 38px;
+      content: "♡";
+      transform: rotate(-9deg);
+    }
+
+    .salutation {
+      margin: 0 0 1.2rem;
+      color: #6b8fa4;
+      font-size: clamp(2rem, 7vw, 3.8rem);
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-shadow: 2px 2px 0 rgba(255, 230, 135, .75);
+    }
+
+    .letter-text {
+      position: relative;
+      z-index: 2;
+      margin: 0;
+      color: #171717;
+      font-size: clamp(1.12rem, 3.7vw, 1.52rem);
+      font-weight: 600;
+      line-height: 1.95;
+      letter-spacing: .035em;
+      text-align: left;
+    }
+
+    .cake {
+      position: relative;
+      width: 118px;
+      height: 103px;
+      margin: 2.4rem auto 1rem;
+      transform: rotate(1deg);
+    }
+
+    .cake-base {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 65px;
+      border: 3px solid #7f6b61;
+      border-radius: 14px 14px 22px 22px;
+      background: #ffd0d4;
+    }
+
+    .cake-cream {
+      position: absolute;
+      top: 33px;
+      right: 0;
+      left: 0;
+      z-index: 2;
+      height: 27px;
+      border: 3px solid #7f6b61;
+      border-radius: 15px 15px 40% 40%;
+      background: #fff9e9;
+    }
+
+    .candle {
+      position: absolute;
+      top: 5px;
+      left: 53px;
+      width: 13px;
+      height: 34px;
+      border: 3px solid #7f6b61;
+      border-radius: 4px;
+      background: #8bcbd9;
+    }
+
+    .flame {
+      position: absolute;
+      top: -15px;
+      left: 52px;
+      width: 15px;
+      height: 22px;
+      border: 2px solid #a56d40;
+      border-radius: 60% 40% 60% 40%;
+      background: #ffd35e;
+      transform: rotate(45deg);
+      animation: flicker .8s ease-in-out infinite alternate;
+    }
+
+    @keyframes flicker {
+      to { transform: rotate(42deg) scale(.88); }
+    }
+
+    .signature {
+      margin: 1rem 0 0;
+      color: #c07e8b;
+      font-size: clamp(1.2rem, 3.8vw, 1.6rem);
+      text-align: right;
+    }
+
+    .bear {
+      position: fixed;
+      right: clamp(-20px, 1vw, 18px);
+      bottom: clamp(-8px, 1vw, 14px);
+      z-index: 4;
+      width: clamp(150px, 25vw, 310px);
+      max-height: 38vh;
+      border: 4px solid rgba(255,255,255,.85);
+      border-radius: 48% 42% 16px 28px;
+      box-shadow: 5px 7px 0 rgba(90, 125, 117, .15);
+      object-fit: cover;
+      transform: rotate(1.5deg);
+      pointer-events: none;
+    }
+
+    .music-dock {
+      position: fixed;
+      bottom: 16px;
+      left: 16px;
+      z-index: 20;
+      display: none;
+      width: min(350px, calc(100vw - 32px));
+      border: 3px solid rgba(113, 95, 87, .45);
+      border-radius: 14px;
+      background: rgba(255,255,255,.78);
+      box-shadow: 5px 6px 0 rgba(95, 82, 75, .12);
+      overflow: hidden;
+    }
+
+    .music-dock.is-ready {
+      display: block;
+      animation: music-in .55s ease both;
+    }
+
+    .music-dock iframe {
+      display: block;
+      width: 100%;
+      height: 80px;
+      border: 0;
+    }
+
+    @keyframes music-in {
+      from { opacity: 0; transform: translateY(20px); }
+    }
+
+    .replay {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 8;
+      padding: .65rem 1rem;
+      border: 2px dashed #7c8e91;
+      border-radius: 999px;
+      background: rgba(255,255,255,.78);
+      color: #526b70;
+      cursor: pointer;
+    }
+
+    .replay:hover {
+      background: white;
+    }
+
+    @media (max-width: 620px) {
+      .letter-scene {
+        padding: 18px 10px 190px;
+      }
+
+      .letter-paper {
+        padding: 52px 20px 170px;
+      }
+
+      .bear {
+        width: 175px;
+        max-height: 29vh;
+      }
+
+      .music-dock {
+        right: 10px;
+        bottom: 10px;
+        left: 10px;
+        width: auto;
+      }
+
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="intro-scene" id="introScene" aria-label="一封等待打开的信">
+    <div class="intro-wrap">
+      <p class="tiny-title">一封给你的信 · · ·</p>
+
+      <button class="envelope" id="envelope" type="button" aria-label="点击打开信封">
+        <span class="envelope-back"></span>
+        <span class="paper-preview"></span>
+        <span class="fold fold-left"></span>
+        <span class="fold fold-right"></span>
+        <span class="fold fold-bottom"></span>
+        <span class="flap"></span>
+      </button>
+
+      <p class="click-tip" id="clickTip">点一下信封</p>
+    </div>
+  </section>
+
+  <div class="white-flash" id="whiteFlash" aria-hidden="true"></div>
+
+  <main class="letter-scene" id="letterScene">
+    <button class="replay" id="replay" type="button">↻ 再看一次</button>
+
+    <article class="letter-paper">
+      <h1 class="salutation">helloKK</h1>
+
+      <p class="letter-text">
+        姐姐希望你勇敢做自己，不要自卑！我觉得你又帅又可爱呀 = v =<br><br>
+
+        姐姐一直都知道你是个很有礼貌很乖的小朋友～
+        你不告诉姐姐你的生日，但是我已经看好了生日礼物给你。
+        我总是想尽作为一个姐姐的义务，可以把你前十七年缺少的亲情都补回来，
+        好好的对你，让你感觉到温暖，所以一个劲的对你好，因为你是我弟弟呀～
+        希望以后的每一天你都开开心心！<br><br>
+
+        生活不需要时时刻刻完美，我希望你可以勇敢做自己，
+        接纳自己的脆弱和眼泪，每个人都会在不同的年龄有焦虑的事情～
+        所以请专注自己，相信自己！有什么都可以和我说哦，
+        我永远是你的姐姐！<br><br>
+
+        这是我为你做的网页，它只属于你 ‘3’
+      </p>
+
+      <div class="cake" aria-label="一个粉色生日蛋糕">
+        <span class="flame"></span>
+        <span class="candle"></span>
+        <span class="cake-cream"></span>
+        <span class="cake-base"></span>
+      </div>
+
+      <p class="signature">祝你每天都有小小的快乐 ✦</p>
+    </article>
+
+    <img class="bear" src="./relax-bear.jpeg" alt="可爱的轻松熊插画">
+  </main>
+
+  <aside class="music-dock" id="musicDock" aria-label="背景音乐播放器">
+    <iframe
+      id="musicPlayer"
+      title="颜人中《夏夜最后的烟火》"
+      data-src="https://open.spotify.com/embed/track/3C62VWrA6IRhoLAX4NXXua?utm_source=generator&amp;theme=0&amp;autoplay=1"
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      loading="eager">
+    </iframe>
+  </aside>
+
+  <script>
+    const envelope = document.querySelector("#envelope");
+    const clickTip = document.querySelector("#clickTip");
+    const introScene = document.querySelector("#introScene");
+    const letterScene = document.querySelector("#letterScene");
+    const whiteFlash = document.querySelector("#whiteFlash");
+    const replay = document.querySelector("#replay");
+    const musicDock = document.querySelector("#musicDock");
+    const musicPlayer = document.querySelector("#musicPlayer");
+
+    let step = 0;
+    let changingScene = false;
+
+    function startMusic() {
+      if (!musicPlayer.src) {
+        musicPlayer.src = musicPlayer.dataset.src;
+        musicDock.classList.add("is-ready");
+      }
+    }
+
+    function openEnvelope() {
+      if (changingScene) return;
+
+      // 浏览器通常需要一次点击以后，才允许有声音的音乐开始播放。
+      startMusic();
+
+      if (step === 0) {
+        envelope.classList.add("is-open");
+        envelope.setAttribute("aria-label", "点击展开信纸");
+        clickTip.textContent = "再点一下信纸";
+        step = 1;
+        return;
+      }
+
+      changingScene = true;
+      envelope.classList.add("is-unfolding");
+      clickTip.textContent = "信正在展开 · · ·";
+
+      window.setTimeout(() => {
+        whiteFlash.classList.add("is-on");
+      }, 850);
+
+      window.setTimeout(() => {
+        introScene.classList.add("is-gone");
+        letterScene.classList.add("is-visible");
+        window.scrollTo({ top: 0, behavior: "instant" });
+      }, 2050);
+
+      window.setTimeout(() => {
+        whiteFlash.classList.remove("is-on");
+        document.body.style.overflowY = "auto";
+      }, 2200);
+    }
+
+    function resetLetter() {
+      document.body.style.overflowY = "hidden";
+      letterScene.classList.remove("is-visible");
+      introScene.classList.remove("is-gone");
+      envelope.classList.remove("is-open", "is-unfolding");
+      envelope.setAttribute("aria-label", "点击打开信封");
+      clickTip.textContent = "点一下信封";
+      step = 0;
+      changingScene = false;
+    }
+
+    envelope.addEventListener("click", openEnvelope);
+    replay.addEventListener("click", resetLetter);
+    document.body.style.overflowY = "hidden";
+  </script>
+</body>
+</html>
